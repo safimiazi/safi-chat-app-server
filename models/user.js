@@ -17,8 +17,9 @@ const userSchema = new mongoose.Schema({
         require: [true, "Email is required"],
         validate: {
             validator: function (email) {
-                return String(email).toLowerCase().match()
-            }
+                return String(email).toLowerCase().match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
+            },
+            message: (props) => `Email (${props.value}) is invalid`
         }
 
     }
