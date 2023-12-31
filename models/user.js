@@ -42,3 +42,5 @@ const userSchema = new mongoose.Schema({
         type: Date,
     }
 })
+
+const User = new mongoose.model("User", userSchema);
