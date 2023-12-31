@@ -9,4 +9,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: [true, "Last Name is required"],
     },
+    avatar: {
+        type: String,
+    }
 })
