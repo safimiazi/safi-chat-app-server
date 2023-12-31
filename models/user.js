@@ -16,8 +16,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: [true, "Email is required"],
         validate: {
-            validator: function name(params) {
-                
+            validator: function (email) {
+                return String(email).toLowerCase().match()
             }
         }
 
