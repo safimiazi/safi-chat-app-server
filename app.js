@@ -7,6 +7,11 @@ const bodyParser = require("body-parser");
 const xss = require("xss");
 const app = express()
 const cors = require("cors")
+
+app.use(express.urlencoded({
+    extended: true
+}));
+// app.use(xss())
 app.use(express.json({limit: "10kb"}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -27,11 +32,8 @@ const limiter = rateLimit({
 })
 
 app.use("/safichat", limiter);
-app.use(express.urlencoded({
-    extended: true
-}));
 
 app.use(mongoSanitize());
-app.use(xss())
+
 
 module.exports = app;
