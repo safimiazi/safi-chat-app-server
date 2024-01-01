@@ -41,7 +41,11 @@ const userSchema = new mongoose.Schema({
     updatedAt: {
         type: Date,
     }
-})
+});
+
+userSchema.methods.correctPassword = async function(canditatePassword, userPassword){
+    return await bcrypt
+}
 
 const User = new mongoose.model("User", userSchema);
 module.exports= User;
