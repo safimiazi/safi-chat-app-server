@@ -134,7 +134,7 @@ exports.protect = async (req, res, next) => {
 
 
 exports.forgotPassword = async (req, res, next) => {
-    //
+    //get user email
 }
 
 exports.resetPassword = async (req, res, next) => {
