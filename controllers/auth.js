@@ -145,6 +145,7 @@ exports.forgotPassword = async (req, res, next) => {
     }
 
     //Generate the random reset token
+    const resetToken = user.createPasswordResetToken();
     
 }
 
