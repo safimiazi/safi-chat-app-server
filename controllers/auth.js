@@ -3,6 +3,13 @@ const User = require("../models/user")
 
 const signToken = (userId) => jwt.sign({userId}, process.env.JWT_SECRET);
 
+
+//register new user:
+exports.register = async(req, res, next) => {
+    const {firstName, lastName, email, password} = req.body;
+}
+
+
 exports.login = async (req, res, next) => {
     const { email, password } = req.body;
 
