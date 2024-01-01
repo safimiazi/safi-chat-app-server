@@ -11,12 +11,12 @@ exports.login = async (req, res, next) => {
         })
     }
 
-const user = await User.findOne({email: email}).select("+password");
+const userDoc = await User.findOne({email: email}).select("+password");
 
-if(!user){
+if(!userDoc || !(await userDoc.correctPassword(password, userDoc.password))){
     res.status(400).json({
         status: "error",
-        message: "Email is Incorrect"
+        message: "Email or password is Incorrect"
     })
 }
 
