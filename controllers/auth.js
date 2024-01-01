@@ -158,6 +158,13 @@ try {
 } catch (error) {
     user.passwordResetToken = undefined;
     user.passwordResetExpire = undefined;
+
+    await user.save({validateBeforeSave: false});
+
+    res.status(500).json({
+        status: "error",
+        message: "There was an error sending the email, please try again later."
+    })
 }
 
     
