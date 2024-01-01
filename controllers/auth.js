@@ -151,7 +151,10 @@ exports.forgotPassword = async (req, res, next) => {
 try {
     //TODO => send email with reset url
 
-    
+    res.status(200).json({
+        status: "success",
+        message: "Reset password link sent to Email"
+    })
 } catch (error) {
     
 }
