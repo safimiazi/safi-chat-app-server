@@ -9,6 +9,18 @@ exports.register = async(req, res, next) => {
     const {firstName, lastName, email, password} = req.body;
 
     //check if a verified user with given email exists
+    const existing_user = await User.findOne({email: email});
+
+    if(existing_user && existing_user.verified){
+        res.status(400).json({
+            status: "error",
+            message: "Email is already in use, Please login"
+        })
+    }else if(existing_user) {
+        await User.findOneAndUpdate({email: email}, {...req.body},)
+    }else{
+        
+    }
 }
 
 
