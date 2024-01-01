@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require("../models/user");
 const filterObj = require('../utils/filterObj');
-const otpGenerator = require('otp-generator')
+const otpGenerator = require('otp-generator');
+const { json } = require('body-parser');
 
 const signToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
 
@@ -45,6 +46,13 @@ await User.findByIdAndUpdate(userId, {
     otp: new_otp,
     otp_expiry_time,
 });
+
+// TODO send mail
+
+res.status(200),json({
+    status: "success",
+    message: "OTP Send Successfully"
+})
 
 }
 
