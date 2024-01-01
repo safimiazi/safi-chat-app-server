@@ -38,46 +38,60 @@ exports.register = async (req, res, next) => {
 }
 
 exports.sendOTP = async (req, res, next) => {
-    const {userId} = req;
-    const new_otp =otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
-const otp_expiry_time = Date.new() + 10*60*1000; // 10 mins after otp is sent
+    const { userId } = req;
+    const new_otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
+    const otp_expiry_time = Date.new() + 10 * 60 * 1000; // 10 mins after otp is sent
 
-await User.findByIdAndUpdate(userId, {
-    otp: new_otp,
-    otp_expiry_time,
-});
+    await User.findByIdAndUpdate(userId, {
+        otp: new_otp,
+        otp_expiry_time,
+    });
 
-// TODO send mail
+    // TODO send mail
 
-res.status(200),json({
-    status: "success",
-    message: "OTP Send Successfully"
-})
+    res.status(200), json({
+        status: "success",
+        message: "OTP Send Successfully"
+    })
 
 }
 
 exports.verifyOTP = async (req, res, next) => {
     //verify otp and update user record accordingly
-    const {email, otp} = req.body;
+    const { email, otp } = req.body;
 
     const user = await User.findOne({
-        email, 
-        otp_expiry_time: {$gt: Date.now()},
+        email,
+        otp_expiry_time: { $gt: Date.now() },
     });
 
-    if(!user){
+    if (!user) {
         res.status(400).json({
             status: "error",
             message: "Email is Invalid or OTP expired",
         })
     }
 
-    if(!await user.correctOTP(otp, user.otp)) {
-res.status(400).json({
-    status: "error",
-    message: "OTP is incorrect",
-})
+    if (!await user.correctOTP(otp, user.otp)) {
+        res.status(400).json({
+            status: "error",
+            message: "OTP is incorrect",
+        })
     }
+
+    //OTP is correct
+
+    user.verified = true;
+    user.otp= undefined;
+    await user.save({new: true , validateModifiedOnly: true})
+
+    const token = signToken(user._id);
+
+    res.status(200).json({
+        status: "success",
+        message: "OTP verified successfully",
+        token,
+    })
 }
 
 
@@ -109,4 +123,20 @@ exports.login = async (req, res, next) => {
     })
 
 
+}
+
+
+
+
+exports.protect = async (req, res, next) => {
+    //
+}
+
+
+exports.forgotPassword = async (req, res, next) => {
+    //
+}
+
+exports.resetPassword = async (req, res, next) => {
+    //
 }
