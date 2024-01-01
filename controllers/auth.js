@@ -135,6 +135,14 @@ exports.protect = async (req, res, next) => {
 
 exports.forgotPassword = async (req, res, next) => {
     //get user email
+    const user = await User.findOne({email: req.body.email});
+
+    if(!user){
+        res.status(400).json({
+            status: "error",
+            message: "There is no user with given email address"
+        })
+    }
 }
 
 exports.resetPassword = async (req, res, next) => {
