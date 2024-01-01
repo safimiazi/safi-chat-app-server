@@ -156,7 +156,8 @@ try {
         message: "Reset password link sent to Email"
     })
 } catch (error) {
-    
+    user.passwordResetToken = undefined;
+    user.passwordResetExpire = undefined;
 }
 
     
