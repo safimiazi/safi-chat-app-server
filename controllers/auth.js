@@ -146,7 +146,7 @@ exports.forgotPassword = async (req, res, next) => {
 
     //Generate the random reset token
     const resetToken = user.createPasswordResetToken();
-    
+    const resetURL = `https://safichat.com/auth/reset-password/?code=${resetToken}`;
 }
 
 exports.resetPassword = async (req, res, next) => {
