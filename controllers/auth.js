@@ -7,6 +7,8 @@ const signToken = (userId) => jwt.sign({userId}, process.env.JWT_SECRET);
 //register new user:
 exports.register = async(req, res, next) => {
     const {firstName, lastName, email, password} = req.body;
+
+    //check if a verified user with given email exists
 }
 
 
