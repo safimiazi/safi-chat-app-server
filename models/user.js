@@ -74,5 +74,12 @@ userSchema.methods.correctOTP = async function(canditateOTP, userOTP){
     return await bcrypt.compare(canditateOTP, userOTP);
 }
 
+userSchema.methods.createPasswordResetToken = function () {
+    
+}
+
+
+
+
 const User = new mongoose.model("User", userSchema);
 module.exports= User;
