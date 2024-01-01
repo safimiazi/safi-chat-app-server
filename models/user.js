@@ -75,7 +75,7 @@ userSchema.methods.correctOTP = async function(canditateOTP, userOTP){
 }
 
 userSchema.methods.createPasswordResetToken = function () {
-    
+    const resetToken = crypto
 }
 
 
