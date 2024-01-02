@@ -172,6 +172,18 @@ try {
 
 exports.resetPassword = async (req, res, next) => {
     //Get user based on token
-    const hashedToken = crypto.createHash("sha256").update(req.params.token).digest()
-    
+    const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpire: {$gt: Date.now()},
+    })
+
+    if(!user){
+        res.status(400).json({
+            status: "error",
+            message: "Token is Invalid or Expired"
+        });
+    }
+    user.password = req.body.password;
+    user.passwordConfirm 
 }
