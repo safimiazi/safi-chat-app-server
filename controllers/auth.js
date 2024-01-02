@@ -136,18 +136,20 @@ exports.protect = async (req, res, next) => {
     let token;
     //"bearer  ljflsjfsjflsdjs"
 
-    if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
         token = req.headers.authorization.split(" ")[1];
-    }else if(req.cookies.jwt){
+    } else if (req.cookies.jwt) {
         token = req.cookies.jwt;
-    }else {
+    } else {
         req.status(400).json({
             status: "error",
             message: "You are not logged In! Please Log in to get access"
         });
         return;
     }
-    
+
+    //verification of token
+
 }
 
 
@@ -170,26 +172,26 @@ exports.forgotPassword = async (req, res, next) => {
     const resetToken = user.createPasswordResetToken();
     const resetURL = `https://safichat.com/auth/reset-password/?code=${resetToken}`;
 
-try {
-    //TODO => send email with reset url
+    try {
+        //TODO => send email with reset url
 
-    res.status(200).json({
-        status: "success",
-        message: "Reset password link sent to Email"
-    })
-} catch (error) {
-    user.passwordResetToken = undefined;
-    user.passwordResetExpire = undefined;
+        res.status(200).json({
+            status: "success",
+            message: "Reset password link sent to Email"
+        })
+    } catch (error) {
+        user.passwordResetToken = undefined;
+        user.passwordResetExpire = undefined;
 
-    await user.save({validateBeforeSave: false});
+        await user.save({ validateBeforeSave: false });
 
-    res.status(500).json({
-        status: "error",
-        message: "There was an error sending the email, please try again later."
-    })
-}
+        res.status(500).json({
+            status: "error",
+            message: "There was an error sending the email, please try again later."
+        })
+    }
 
-    
+
 }
 
 exports.resetPassword = async (req, res, next) => {
@@ -197,12 +199,12 @@ exports.resetPassword = async (req, res, next) => {
     const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
     const user = await User.findOne({
         passwordResetToken: hashedToken,
-        passwordResetExpire: {$gt: Date.now()},
+        passwordResetExpire: { $gt: Date.now() },
     })
 
     //if token has expired or submission is out of time window
 
-    if(!user){
+    if (!user) {
         res.status(400).json({
             status: "error",
             message: "Token is Invalid or Expired"
