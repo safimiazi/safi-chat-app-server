@@ -6,6 +6,7 @@ const { json } = require('body-parser');
 
 const signToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
 
+//SignUp Process => register -> send OTP -> verify OTP
 
 //register new user:
 exports.register = async (req, res, next) => {
@@ -133,6 +134,9 @@ exports.protect = async (req, res, next) => {
 }
 
 
+//types of routes => protected (only logged in users can access these) and unProtected
+
+
 exports.forgotPassword = async (req, res, next) => {
     //get user email
     const user = await User.findOne({ email: req.body.email });
@@ -185,6 +189,7 @@ exports.resetPassword = async (req, res, next) => {
             status: "error",
             message: "Token is Invalid or Expired"
         });
+        return;
     }
 
     //update users password and set resetToken and expiry to undefined
