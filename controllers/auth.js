@@ -172,4 +172,6 @@ try {
 
 exports.resetPassword = async (req, res, next) => {
     //Get user based on token
+    const hashedToken = crypto.createHash("sha256").update(req.params.token).digest()
+    
 }
