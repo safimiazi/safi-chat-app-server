@@ -178,12 +178,32 @@ exports.resetPassword = async (req, res, next) => {
         passwordResetExpire: {$gt: Date.now()},
     })
 
+    //if token has expired or submission is out of time window
+
     if(!user){
         res.status(400).json({
             status: "error",
             message: "Token is Invalid or Expired"
         });
     }
+
+    //update users password and set resetToken and expiry to undefined
     user.password = req.body.password;
-    user.passwordConfirm 
+    user.passwordConfirm = req.body.passwordConfirm;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpire = undefined;
+
+    await user.save();
+
+    // login the user and send new JWT
+
+    //TODO => send an email to user informing about password reset
+
+    const token = signToken(user._id);
+
+    res.status(200).json({
+        status: "success",
+        message: "password Reseted successfully",
+        token,
+    })
 }
