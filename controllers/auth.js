@@ -147,7 +147,8 @@ exports.forgotPassword = async (req, res, next) => {
         res.status(400).json({
             status: "error",
             message: "There is no user with given email address"
-        })
+        });
+        return;
     }
 
     //Generate the random reset token
