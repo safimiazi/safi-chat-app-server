@@ -171,5 +171,5 @@ try {
 }
 
 exports.resetPassword = async (req, res, next) => {
-    //
+    //Get user based on token
 }
