@@ -134,6 +134,7 @@ exports.login = async (req, res, next) => {
 exports.protect = async (req, res, next) => {
     //1) getting token (jwt) and check if its there
     let token;
+    //"bearer  ljflsjfsjflsdjs"
 }
 
 
