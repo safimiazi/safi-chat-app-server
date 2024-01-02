@@ -145,6 +145,7 @@ exports.protect = async (req, res, next) => {
             status: "error",
             message: "You are not logged In! Please Log in to get access"
         });
+        return;
     }
     
 }
