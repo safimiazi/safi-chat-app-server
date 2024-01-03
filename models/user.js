@@ -84,6 +84,10 @@ userSchema.methods.createPasswordResetToken = function () {
     return resetToken;
 }
 
+userSchema.methods.changedPasswordAfter = function (timestamp) {
+    return timestamp > this.passwordChangedAt;
+}
+
 
 
 
