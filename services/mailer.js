@@ -34,7 +34,7 @@ const sendSGMail = async ({
         return mg.messages().send(msg)
     } catch (error) {
         console.log(error);
-    }
+    };
 }
 
 exports.sendEmail = async (args) => {
