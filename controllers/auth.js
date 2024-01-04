@@ -4,6 +4,7 @@ const filterObj = require('../utils/filterObj');
 const otpGenerator = require('otp-generator');
 const { json } = require('body-parser');
 const { promisify } = require('util');
+const mailServices = require("../services/mailer")
 
 const signToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
 
@@ -50,6 +51,13 @@ exports.sendOTP = async (req, res, next) => {
     });
 
     // TODO send mail
+    mailServices.sendEmail({
+       from: "mohibullamiazi@gmail.com",
+       to: "example@gmail.com",
+       subject: "OTP for safichat",
+       text: `Your OTP is ${new_otp}. this is valid for 10 Mins.`
+    })
+
 
     res.status(200), json({
         status: "success",

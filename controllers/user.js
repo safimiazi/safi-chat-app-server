@@ -1,7 +1,7 @@
 const User = require("../models/user");
 const filterObj = require("../utils/filterObj");
 
-exports.updateMe = async (req, res. next) => {
+exports.updateMe = async (req, res, next) => {
     const {user} = req;
 
     const filteredBody = filterObj(req.body, "firstName", "LastName", "about", "avatar");
