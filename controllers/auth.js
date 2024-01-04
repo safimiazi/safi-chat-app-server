@@ -5,6 +5,7 @@ const otpGenerator = require('otp-generator');
 const { json } = require('body-parser');
 const { promisify } = require('util');
 const mailServices = require("../services/mailer")
+const crypto = require("crypto");
 
 const signToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
 
@@ -45,7 +46,7 @@ exports.sendOTP = async (req, res, next) => {
     const new_otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
     const otp_expiry_time = Date.new() + 10 * 60 * 1000; // 10 mins after otp is sent
 
-    await User.findByIdAndUpdate(userId, {
+  const user =  await User.findByIdAndUpdate(userId, {
         otp: new_otp,
         otp_expiry_time,
     });
@@ -53,7 +54,7 @@ exports.sendOTP = async (req, res, next) => {
     // TODO send mail
     mailServices.sendEmail({
        from: "mohibullamiazi@gmail.com",
-       to: "example@gmail.com",
+       to: user.email,
        subject: "OTP for safichat",
        text: `Your OTP is ${new_otp}. this is valid for 10 Mins.`
     })

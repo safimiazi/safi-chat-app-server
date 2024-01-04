@@ -1,29 +1,37 @@
-const sgMail = require("@sendgrid/mail");
+const mailgun = require("mailgun-js");
 const dotenv = require("dotenv");
-dotenv.config({path: "../config.env"})
-sgMail.setApiKey(process.env.SG_KEY);
+dotenv.config({ path: "../config.env" });
+
+// Check if MAILGUN_API_KEY is defined in your environment variables or .env file
+const apiKey = `${process.env.MAILGUN_API_KEY}`;
+
+if (!apiKey) {
+  console.error("Mailgun API key is not defined!");
+  process.exit(1);
+}
+
+// Initialize Mailgun with your API key and domain
+const domain = `${process.env.MAILGUN_DOMAIN}`;
+const mg = mailgun({ apiKey, domain });
+
 
 const sendSGMail = async ({
-    recipient,
-    sender,
+    f,
+    to,
     subject,
-    html,
     text,
-    attachments,
+
 }) => {
     try {
-        const from = sender || "mohibullamiazi@gmail.com";
+        const from = f || "mohibullamiazi@gmail.com";
 
         const msg = {
-            to: recipient, //email of recipient
-            form: from, //this will be our verified sender
-            subject,
-            html: html,
+            from: from,
+            to: to,
+            subject: subject,
             text: text,
-            attachments,
-
-        }
-        return sgMail.send(msg)
+          };
+        return mg.messages().send(msg)
     } catch (error) {
         console.log(error);
     }
