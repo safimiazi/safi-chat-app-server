@@ -3,6 +3,7 @@ const User = require("../models/user");
 const filterObj = require('../utils/filterObj');
 const otpGenerator = require('otp-generator');
 const { json } = require('body-parser');
+const { promisify } = require('util');
 
 const signToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
 
