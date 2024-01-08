@@ -38,7 +38,7 @@ exports.register = async (req, res, next) => {
         req.userId = new_user._id
         next();
 
-    }
+    };
 }
 
 exports.sendOTP = async (req, res, next) => {
