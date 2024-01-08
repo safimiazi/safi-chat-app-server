@@ -35,7 +35,7 @@ const sendSGMail = async ({
     } catch (error) {
         console.log(error);
     };
-}
+};
 
 exports.sendEmail = async (args) => {
     if (process.env.NODE_ENV === "development") {
