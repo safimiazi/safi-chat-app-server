@@ -42,5 +42,5 @@ exports.sendEmail = async (args) => {
         return new Promise.resolve();
     } else {
         return sendSGMail(args);
-    }
+    };
 }
