@@ -43,4 +43,4 @@ exports.sendEmail = async (args) => {
     } else {
         return sendSGMail(args);
     };
-}
+};
