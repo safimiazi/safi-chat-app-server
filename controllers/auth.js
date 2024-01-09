@@ -39,7 +39,7 @@ exports.register = async (req, res, next) => {
         next();
 
     };
-}
+};
 
 exports.sendOTP = async (req, res, next) => {
     const { userId } = req;
