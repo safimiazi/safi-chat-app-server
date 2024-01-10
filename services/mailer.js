@@ -25,7 +25,7 @@ const sendSGMail = async ({
         to: to,
         subject: subject,
         text: text,
-      };
+      }
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           console.log(error);
