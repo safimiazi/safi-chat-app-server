@@ -1,46 +1,50 @@
-const mailgun = require("mailgun-js");
+var nodemailer = require('nodemailer');
 const dotenv = require("dotenv");
 dotenv.config({ path: "../config.env" });
 
-// Check if MAILGUN_API_KEY is defined in your environment variables or .env file
-const apiKey = `${process.env.MAILGUN_API_KEY}`;
 
-if (!apiKey) {
-  console.error("Mailgun API key is not defined!");
-  process.exit(1);
-}
-
-// Initialize Mailgun with your API key and domain
-const domain = `${process.env.MAILGUN_DOMAIN}`;
-const mg = mailgun({ apiKey, domain });
 
 
 const sendSGMail = async ({
-    f,
-    to,
-    subject,
-    text,
-
+  to,
+  subject,
+  text,
 }) => {
-    try {
-        const from = f || "mohibullamiazi@gmail.com";
-
-        const msg = {
-            from: from,
-            to: to,
-            subject: subject,
-            text: text,
-          };
-        return mg.messages().send(msg)
-    } catch (error) {
-        console.log(error);
-    };
+    console.log(subject);
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.NODEMAILER_USER,
+          pass: process.env.NODEMAILER_PASS,
+        },
+      });
+      const mailOptions = {
+        from: process.env.NODEMAILER_USER,
+        to: to,
+        subject: subject,
+        text: text,
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log(error);
+          return res.status(500).send(error.toString());
+        }
+        res.status(200).send(info.response);
+      });
 };
 
 exports.sendEmail = async (args) => {
-    if (process.env.NODE_ENV === "development") {
-        return new Promise.resolve();
-    } else {
-        return sendSGMail(args);
-    };
+  if (process.env.NODE_ENV === "development") {
+    return Promise.resolve();
+  } else {
+    try {
+      return await sendSGMail(args);
+    } catch (error) {
+      // Handle the error, log it, or take appropriate action
+      console.error("Error sending email:", error);
+      return Promise.reject(error);
+    }
+  }
 };

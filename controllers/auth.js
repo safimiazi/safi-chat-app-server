@@ -4,8 +4,9 @@ const filterObj = require('../utils/filterObj');
 const otpGenerator = require('otp-generator');
 const { json } = require('body-parser');
 const { promisify } = require('util');
-const mailServices = require("../services/mailer")
+
 const crypto = require("crypto");
+const mailService = require("../services/mailer");
 
 const signToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
 
@@ -44,28 +45,32 @@ exports.register = async (req, res, next) => {
 exports.sendOTP = async (req, res, next) => {
     const { userId } = req;
     const new_otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
-    const otp_expiry_time = Date.new() + 10 * 60 * 1000; // 10 mins after otp is sent
+    const otp_expiry_time = new Date() + 10 * 60 * 1000; // 10 mins after otp is sent
 
-  const user =  await User.findByIdAndUpdate(userId, {
+    const user = await User.findByIdAndUpdate(userId, {
         otp: new_otp,
         otp_expiry_time,
     });
+    console.log(user.email);
+    user.otp = new_otp.toString();
+
+    await user.save({ new: true, validateModifiedOnly: true });
+
+    console.log(new_otp);
 
     // TODO send mail
-    mailServices.sendEmail({
-       from: "mohibullamiazi@gmail.com",
-       to: user.email,
-       subject: "OTP for safichat",
-       text: `Your OTP is ${new_otp}. this is valid for 10 Mins.`
-    })
+    mailService.sendEmail({
+        to: user.email,
+        subject: "Verification OTP",
+        text: `your otp is ${new_otp}`
+    });
 
-
-    res.status(200), json({
+    res.status(200).json({
         status: "success",
-        message: "OTP Send Successfully"
-    })
+        message: "OTP Sent Successfully",
+    });
+};
 
-}
 
 exports.verifyOTP = async (req, res, next) => {
     //verify otp and update user record accordingly
@@ -165,7 +170,7 @@ exports.protect = async (req, res, next) => {
 
     const this_user = await User.findById(decoded.userId);
 
-    if(!this_user) {
+    if (!this_user) {
         res.status(400).json({
             status: "error",
             message: "The user does not exist",
@@ -173,7 +178,7 @@ exports.protect = async (req, res, next) => {
     }
 
     //4) check if user changed their password ofter token was issued
-    if(this_user.changedPasswordAfter(decoded.iai)) {
+    if (this_user.changedPasswordAfter(decoded.iai)) {
         res.status(400).json({
             status: "error",
             message: "User recently updated password! please log in again",

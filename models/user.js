@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -57,40 +59,40 @@ const userSchema = new mongoose.Schema({
 });
 
 
-userSchema.pre("save", async function(next) {
+userSchema.pre("save", async function (next) {
     //only run this function if OTP is actually modified
 
-    if(!this.isModified("otp")) return next();
-
+    if (!this.isModified("otp")) return next();
+    const otpString = String(this.otp);
     //Hash the otp with the cost of 12
-    this.otp = await bcryptjs.hash(this.otp, 12);
+    this.otp = await bcrypt.hash(otpString, 12);
     next();
 })
 
-userSchema.pre("save", async function(next) {
+userSchema.pre("save", async function (next) {
     //only run this function if OTP is actually modified
 
-    if(!this.isModified("password")) return next();
+    if (!this.isModified("password")) return next();
 
     //Hash the password with the cost of 12
-    this.password = await bcryptjs.hash(this.password, 12);
+    this.password = await bcrypt.hash(this.password, 12);
     next();
 })
 
 
 
-userSchema.methods.correctPassword = async function(canditatePassword, userPassword){
+userSchema.methods.correctPassword = async function (canditatePassword, userPassword) {
     return await bcrypt.compare(canditatePassword, userPassword);
 }
 
-userSchema.methods.correctOTP = async function(canditateOTP, userOTP){
+userSchema.methods.correctOTP = async function (canditateOTP, userOTP) {
     return await bcrypt.compare(canditateOTP, userOTP);
 }
 
 userSchema.methods.createPasswordResetToken = function () {
     const resetToken = crypto.randomBytes(32).toString("hex");
     this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-    this.passwordResetExpire = Date.now() + 10*60*1000;
+    this.passwordResetExpire = Date.now() + 10 * 60 * 1000;
     return resetToken;
 }
 
@@ -102,4 +104,4 @@ userSchema.methods.changedPasswordAfter = function (timestamp) {
 
 
 const User = new mongoose.model("User", userSchema);
-module.exports= User;
+module.exports = User;
