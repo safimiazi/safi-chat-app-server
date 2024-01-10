@@ -62,7 +62,7 @@ exports.sendOTP = async (req, res, next) => {
     mailService.sendEmail({
         to: user.email,
         subject: "Verification OTP",
-        text: `your otp is ${new_otp}`
+        text: `OTP for verification is ${new_otp}, This OTP is valid for next 10 mins`
     });
 
     res.status(200).json({
