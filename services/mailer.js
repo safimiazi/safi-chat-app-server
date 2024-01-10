@@ -10,7 +10,7 @@ const sendSGMail = async ({
   subject,
   text,
 }) => {
-    console.log(subject);
+
     const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 587,
