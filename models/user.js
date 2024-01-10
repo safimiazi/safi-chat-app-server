@@ -63,7 +63,7 @@ userSchema.pre("save", async function (next) {
     //only run this function if OTP is actually modified
 
     if (!this.isModified("otp")) return next();
-    const otpString = String(this.otp)
+    const otpString = String(this.otp);
     //Hash the otp with the cost of 12
     this.otp = await bcrypt.hash(otpString, 12);
     next();
