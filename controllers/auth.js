@@ -266,7 +266,7 @@ exports.resetPassword = async (req, res, next) => {
 
     await user.save();
 
-    // login the user and send new JWT
+    // login the user and send new JWT;
 
     //TODO => send an email to user informing about password reset
 
