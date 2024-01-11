@@ -268,7 +268,7 @@ exports.resetPassword = async (req, res, next) => {
 
     // login the user and send new JWT;
 
-    //TODO => send an email to user informing about password reset;
+    //TODO => send an email to user informing about password reset;j
 
     const token = signToken(user._id);
 
