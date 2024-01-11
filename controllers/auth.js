@@ -45,7 +45,8 @@ exports.register = async (req, res, next) => {
 exports.sendOTP = async (req, res, next) => {
     const { userId } = req;
     const new_otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
-    const otp_expiry_time = new Date() + 10 * 60 * 1000; // 10 mins after otp is sent
+    const otp_expiry_time = new Date(Date.now() + 10 * 60 * 1000); // Use Date object to calculate expiry time
+    // 10 mins after otp is sent
 
     const user = await User.findByIdAndUpdate(userId, {
         otp: new_otp,
@@ -88,13 +89,16 @@ exports.verifyOTP = async (req, res, next) => {
         });
         return;
     }
+    
 
-    if (!await user.correctOTP(otp, user.otp)) {
-        res.status(400).json({
-            status: "error",
-            message: "OTP is incorrect",
-        })
-    }
+const isCorrectOTP = await user.correctOTP(otp, user.otp);
+console.log(isCorrectOTP);
+if (!isCorrectOTP) {
+    return res.status(400).json({
+        status: "error",
+        message: "OTP is incorrect",
+    });
+}
 
     //OTP is correct
 
@@ -213,6 +217,9 @@ exports.forgotPassword = async (req, res, next) => {
     try {
         //TODO => send email with reset url
 
+        
+console.log(resetToken);
+
         res.status(200).json({
             status: "success",
             message: "Reset password link sent to Email"
@@ -234,7 +241,8 @@ exports.forgotPassword = async (req, res, next) => {
 
 exports.resetPassword = async (req, res, next) => {
     //Get user based on token
-    const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+    console.log("coming", req.body.token);
+    const hashedToken = crypto.createHash("sha256").update(req.body.token).digest("hex");
     const user = await User.findOne({
         passwordResetToken: hashedToken,
         passwordResetExpire: { $gt: Date.now() },
