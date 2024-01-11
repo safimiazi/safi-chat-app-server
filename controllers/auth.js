@@ -246,7 +246,7 @@ exports.resetPassword = async (req, res, next) => {
     const user = await User.findOne({
         passwordResetToken: hashedToken,
         passwordResetExpire: { $gt: Date.now() },
-    })
+    });
 
     //if token has expired or submission is out of time window
 
