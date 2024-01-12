@@ -90,19 +90,30 @@ userSchema.methods.correctOTP = async function (candidateOTP, userOTP) {
     return await bcrypt.compare(candidateOTP, userOTP);
   };
 
+ 
+
   userSchema.methods.createPasswordResetToken = function () {
-    // Generate reset token only if the user has an email
-    if (!this.email) {
-      throw new Error("User must have an email to create a password reset token");
+    try {
+        if (!this.email) {
+            throw new Error("User must have an email to create a password reset token");
+          }
+
+        const resetToken = crypto.randomBytes(32).toString("hex");
+
+        this.passwordResetToken = crypto
+            .createHash("sha256")
+            .update(resetToken)
+            .digest("hex");
+
+        this.passwordResetExpire = new Date(Date.now() + 10 * 60 * 1000);
+        this.save()
+        // Save the changes to the database
+        return resetToken;
+    } catch (error) {
+        console.error("Error creating password reset token:", error);
+        throw new Error("Error creating password reset token");
     }
-  
-    const resetToken = crypto.randomBytes(32).toString("hex");
-  
-    this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-    this.passwordResetExpire = new Date(Date.now() + 10 * 60 * 1000);
-  
-    return resetToken;
-  };
+};
 
 userSchema.methods.changedPasswordAfter = function (timestamp) {
     return timestamp > this.passwordChangedAt;
