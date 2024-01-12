@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+
 const User = require("../models/user");
 const filterObj = require('../utils/filterObj');
 const otpGenerator = require('otp-generator');
@@ -7,6 +8,7 @@ const { promisify } = require('util');
 
 const crypto = require("crypto");
 const mailService = require("../services/mailer");
+const resetPassword = require('../Templates/Mail/resetPassword');
 
 const signToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
 
@@ -212,11 +214,16 @@ exports.forgotPassword = async (req, res, next) => {
 
     //Generate the random reset token
     const resetToken = user.createPasswordResetToken();
-    const resetURL = `https://safichat.com/auth/reset-password/?code=${resetToken}`;
+    const resetURL = `http://localhost:3001/auth/new-password?token=${resetToken}`;
 
     try {
         //TODO => send email with reset url
-
+mailService.sendEmail({
+    to: user.email,
+    subject: "Reset Password",
+    html: resetPassword(user.firstName, resetURL),
+    attachments: [],
+  })
         
 console.log(resetToken);
 

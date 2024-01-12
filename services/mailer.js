@@ -1,4 +1,4 @@
-var nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 const dotenv = require("dotenv");
 dotenv.config({ path: "../config.env" });
 
@@ -9,6 +9,7 @@ const sendSGMail = async ({
   to,
   subject,
   text,
+  html
 }) => {
 
     const transporter = nodemailer.createTransport({
@@ -25,6 +26,7 @@ const sendSGMail = async ({
         to: to,
         subject: subject,
         text: text,
+        html: html,
       };
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
