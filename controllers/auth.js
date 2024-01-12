@@ -267,14 +267,7 @@ exports.resetPassword = async (req, res, next) => {
         return;
     }
 
-   
-// const currentTime = new Date()
 
-//   const timeDifference = currentTime - resetCreationTime
-
-//   if (timeDifference > 24 * 60 * 60 * 1000) {
-//     throw new ApiError(httpStatus.BAD_REQUEST, 'Reset link has expired')
-//   }
 
     //update users password and set resetToken and expiry to undefined
     user.password = req.body.password;
