@@ -265,7 +265,7 @@ exports.resetPassword = async (req, res, next) => {
             message: "Token is Invalid or Expired"
         });
         return;
-    }
+    };
 
 
 
