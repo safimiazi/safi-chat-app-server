@@ -24,7 +24,7 @@ app.use(cors({
 }))
 if(process.env.NODE_ENV === "development"){
     app.use(morgan("dev"));
-}
+};
 
 const limiter = rateLimit({
     max: 3000,
