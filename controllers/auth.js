@@ -100,7 +100,7 @@ if (!isCorrectOTP) {
         status: "error",
         message: "OTP is incorrect",
     });
-}
+};
 
     //OTP is correct
 
