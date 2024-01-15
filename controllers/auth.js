@@ -90,7 +90,7 @@ exports.verifyOTP = async (req, res, next) => {
             message: "Email is Invalid or OTP expired",
         });
         return;
-    }
+    };
     
 
 const isCorrectOTP = await user.correctOTP(otp, user.otp);
