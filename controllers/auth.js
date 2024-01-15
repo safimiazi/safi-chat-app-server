@@ -115,7 +115,7 @@ if (!isCorrectOTP) {
         message: "OTP verified successfully",
         token,
     })
-}
+};
 
 
 exports.login = async (req, res, next) => {
