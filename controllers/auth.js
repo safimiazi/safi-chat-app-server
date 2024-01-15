@@ -126,7 +126,7 @@ exports.login = async (req, res, next) => {
             status: "error",
             message: "Both email and password are required"
         })
-    }
+    };
 
     const userDoc = await User.findOne({ email: email }).select("+password");
 
