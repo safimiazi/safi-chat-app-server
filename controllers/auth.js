@@ -136,7 +136,7 @@ exports.login = async (req, res, next) => {
             message: "Email or password is Incorrect"
         });
         return;
-    }
+    };
 
     const token = signToken(userDoc._id);
 
