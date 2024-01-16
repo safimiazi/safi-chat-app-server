@@ -12,7 +12,8 @@ const requestSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now(),
-    }
+    },
+    
 });
 
 const FriendRequest = new mongoose.model("FriendRequest", requestSchema);
