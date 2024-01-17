@@ -17,7 +17,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:300",
+        origin: "*",
         methods: ["GET", "POST"]
     }
 });
@@ -49,8 +49,9 @@ const listen = server.listen(port, () => {
 
 io.on("connection", async (socket) => {
     // console.log(JSON.stringify(socket.handshake.query));
-    // console.log("socket", socket);
-    const user_id = socket.handshake.query("user_id");
+    console.log("socket", socket);
+    const user_id = socket.handshake.query.user_id;
+  console.log(`User connected with ID: ${user_id}`);
     const socket_id = socket.id;
 
     console.log(`User connection ${socket_id}`);
@@ -78,7 +79,7 @@ io.on("connection", async (socket) => {
             message: "New Friend Request Received"
         });
         //emit event => "request_sent"
-        io.to(from_user.socket_id).emit("request_send",{
+        io.to(from_user.socket_id).emit("request_sent",{
             message: "Request send successfully"
         })
     })
@@ -157,6 +158,17 @@ io.on("connection", async (socket) => {
         }
       });
     
+
+      socket.on("get_messages", async (data, callback) => {
+        try {
+          const { messages } = await OneToOneMessage.findById(
+            data.conversation_id
+          ).select("messages");
+          callback(messages);
+        } catch (error) {
+          console.log(error);
+        }
+      });
 
 
   // Handle incoming text/link messages
