@@ -161,8 +161,10 @@ exports.protect = async (req, res, next) => {
 
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
         token = req.headers.authorization.split(" ")[1];
+        console.log(token);
     } else if (req.cookies.jwt) {
         token = req.cookies.jwt;
+        console.log(token);
     } else {
         req.status(400).json({
             status: "error",
@@ -172,7 +174,7 @@ exports.protect = async (req, res, next) => {
     }
 
     //verification of token
-    const decoded = await promisify(jwt.verify)(token, this.process.env.JWT_SECRET);
+    const decoded = await promisify(jwt.verify)(token, this.process?.env.JWT_SECRET);
 
     //3) check if user still exist
 

@@ -1,6 +1,7 @@
 const FriendRequest = require("../models/friendRequest");
 const User = require("../models/user");
 const filterObj = require("../utils/filterObj");
+const { ObjectId } = require('mongoose').Types; // Import ObjectId from mongoose
 
 exports.updateMe = async (req, res, next) => {
     const {user} = req;
@@ -37,9 +38,9 @@ exports.getUsers = async (req, res, next) => {
 
 exports.getRequests = async (req, res, next) => {
     const requests = await FriendRequest.find({
-        recipient: req.user._id,
+        recipient: new ObjectId(req.user._id),
     }).populate("sender", "_id firstName lastName");
-
+console.log("requests",requests);
     res.status(200).json({
         status: "success",
         data: requests,
