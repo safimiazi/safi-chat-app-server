@@ -63,7 +63,7 @@ mongoose.connect(DB, {
             const to_user = await User.findById(data.to).select("socket_id");
             const from_user = await User.findById(data.from).select("socket_id");
     console.log("hhh", to_user);
-    console.log("yyy", from_user);
+  
 
             await FriendRequest.create({
                 sender: data.from,
