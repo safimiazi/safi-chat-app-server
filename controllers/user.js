@@ -115,15 +115,55 @@ exports.getRequests = async (req, res, next) => {
 // }
 
 
+// exports.getFriends = async (req, res, next) => {
+
+//     const existing_friends = await User.findById(req.user._id).select("friends")
+//     console.log("existing", existing_friends);
+//     const this_user = await User.findById(req.user._id).populate(
+//       "friends",
+//       "_id firstName lastName"
+//     );
+//     console.log("hhhhh", this_user);
+//     res.status(200).json({
+//       status: "success",
+//       data: this_user.friends,
+//       message: "Friends found successfully!",
+//     });
+//   };
+
+
 exports.getFriends = async (req, res, next) => {
-    const this_user = await User.findById(req.user._id).populate(
-      "friends",
-      "_id firstName lastName"
-    );
-    console.log("hhhhh", this_user);
-    res.status(200).json({
-      status: "success",
-      data: this_user.friends,
-      message: "Friends found successfully!",
-    });
-  };
+    try {
+        const existing_friends = await User.findById(req.user._id).select("friends");
+        console.log("existing", existing_friends);
+
+        const this_user = await User.findById(req.user._id).populate(
+            "friends",
+            "firstName lastName _id"
+        );
+
+        // Use a Set to store unique friends based on their IDs
+        const uniqueFriends = new Map();
+
+        // Add existing friends to the Map
+        existing_friends.friends.forEach((friend) => uniqueFriends.set(friend.toString(), friend));
+
+        // Add friends from the populated user to the Map
+        this_user.friends.forEach((friend) => uniqueFriends.set(friend._id.toString(), friend));
+
+        // Convert the Map values back to an array
+        const uniqueFriendsArray = Array.from(uniqueFriends.values());
+
+        res.status(200).json({
+            status: "success",
+            data: uniqueFriendsArray,
+            message: "Friends found successfully!",
+        });
+    } catch (error) {
+        console.error("Error fetching friends:", error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal server error",
+        });
+    }
+};
