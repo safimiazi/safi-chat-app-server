@@ -53,7 +53,7 @@ mongoose.connect(DB, {
         console.log(`User connection ${socket_id}`);
     
         if (Boolean(user_id)) {
-            await User.findByIdAndUpdate(user_id, { socket_id,  status: "Online", })
+            await User?.findByIdAndUpdate(user_id, { socket_id,  status: "Online", })
         }
     
         //we can write socket event listeners here.....
@@ -82,33 +82,45 @@ mongoose.connect(DB, {
             })
         })
     
-        socket.on("accept_request", async (data)=> {
-            console.log(data);
-        
-            const request_doc = await FriendRequest.findById(data.request_id);
-            console.log(request_doc);
-        
-            //request_id
-        
-            const sender = await User.findById(request_doc.sender);
-            const receiver = await User.findById(request_doc.recipient);
-        
-            sender.friends.push(request_doc.recipient);
-            receiver.friends.push(request_doc.sender);
-        
-            await receiver.save({new: true, validateModifiedOnly: true});
-            await sender.save({new: true, validateModifiedOnly: true});
-        
-            await FriendRequest.findByIdAndUpdate(data.request_id);
-        
-            io.to(sender.socket_id).emit("request_accepted", {
-                message: "Friend Request Accepted",
-            });
-            io.to(receiver.socket_id).emit("request_accepted", {
-                message: "Friend Request Accepted",
-            });
-        
-        })
+        socket.on("accept_request", async (data) => {
+          console.log("sorovi", data.request_id);
+      
+          try {
+              const request_doc = await FriendRequest.findById(data.request_id);
+      
+              // Find sender and receiver using User model
+              const sender = await User.findById(request_doc.sender);
+              const receiver = await User.findById(request_doc.recipient);
+      
+              console.log("sender", sender);
+              console.log("receiver", receiver);
+      
+              // Update friends list for sender and receiver
+              sender.friends.push(request_doc.recipient);
+              receiver.friends.push(request_doc.sender);
+      
+              // Save changes to sender and receiver
+              await receiver.save();
+              await sender.save();
+      
+              // Update the FriendRequest status
+              await FriendRequest.findByIdAndUpdate(data.request_id, { status: "accepted" });
+      
+              // Emit events to sender and receiver
+              io.to(sender.socket_id).emit("request_accepted", {
+                  message: "Friend Request Accepted",
+              });
+              io.to(receiver.socket_id).emit("request_accepted", {
+                  message: "Friend Request Accepted",
+              });
+      
+              console.log("Friend request accepted successfully");
+          } catch (error) {
+              console.error("Error accepting friend request:", error);
+              // Handle error and emit error event if needed
+          }
+      });
+      
     
         socket.on("get_direct_conversations", async ({ user_id }, callback) => {
             const existing_conversations = await OneToOneMessage.find({

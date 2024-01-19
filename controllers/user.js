@@ -20,42 +20,110 @@ exports.updateMe = async (req, res, next) => {
 }
 
 
+// exports.getUsers = (async (req, res, next) => {
+//     const all_users = await User.find({
+//       verified: true,
+//     }).select("firstName lastName _id");
+  
+//     const this_user = req.user;
+  
+//     console.log("all, this", this_user, );
+//     const remaining_users = all_users.filter(
+//       (user) =>
+//         !this_user.friends.includes(user._id) && user._id !== this_user
+//     );
+  
+//     res.status(200).json({
+//       status: "success",
+//       data: remaining_users,
+//       message: "Users found successfully!",
+//     });
+//   });
+  
+
+
+
 exports.getUsers = async (req, res, next) => {
-    const all_users = await User.find({
-        verified: true,
-    }).select("firstName lastName _id");
+    try {
+        const this_user = req.user;
 
-    const this_user = req.user;
-    const remaining_users = all_users.filter((user)=> !this_user.friends.includes(user._id) && user._id.toString() !== req.user._id.toString());
+        // Find friends and current user's ID
+        const excludedUserIds = [...this_user.friends.map(String), this_user._id.toString()];
 
-    res.status(200).json({
-        status: "success",
-        data: remaining_users,
-        message: "Users found successfully",
-    })
+        // Fetch users who are verified and not in the excludedUserIds list
+        const remaining_users = await User.find({
+            verified: true,
+            _id: { $nin: excludedUserIds },
+        }).select("firstName lastName _id");
+
+        console.log("remaining user", remaining_users);
+
+        res.status(200).json({
+            status: "success",
+            data: remaining_users,
+            message: "Users found successfully",
+        });
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal server error",
+        });
+    }
 };
 
 
-exports.getRequests = async (req, res, next) => {
-    const requests = await FriendRequest.find({
-        recipient: new ObjectId(req.user._id),
-    }).populate("sender", "_id firstName lastName");
-console.log("requests",requests);
-    res.status(200).json({
-        status: "success",
-        data: requests,
-        message: "Friends requests Found Successfully"
-    })
-}
 
+
+exports.getRequests = async (req, res, next) => {
+    try {
+        const userFriends = await User.findById(req.user._id).select('friends');
+
+        const requests = await FriendRequest.find({
+            recipient: new ObjectId(req.user._id),
+            sender: { $nin: userFriends.friends },
+        }).populate("sender", "_id firstName lastName");
+
+        console.log("requests", requests);
+
+        res.status(200).json({
+            status: "success",
+            data: requests,
+            message: "Friend Requests Found Successfully",
+        });
+    } catch (error) {
+        console.error("Error fetching friend requests:", error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal server error",
+        });
+    }
+};
+
+
+
+// exports.getRequests = async (req, res, next) => {
+//     const requests = await FriendRequest.find({
+//         recipient: new ObjectId(req.user._id),
+//     }).populate("sender", "_id firstName lastName");
+// console.log("requests",requests);
+//     res.status(200).json({
+//         status: "success",
+//         data: requests,
+//         message: "Friends requests Found Successfully"
+//     })
+// }
 
 
 exports.getFriends = async (req, res, next) => {
-    const this_user = await User.findById(req.user._id).populate("friends", "_id firstName lastName")
-
+    const this_user = await User.findById(req.user._id).populate(
+      "friends",
+      "_id firstName lastName"
+    );
+    console.log("hhhhh", this_user);
     res.status(200).json({
-        status: "success",
-        data: this_user.friends,
-        message: "Friends Found Successfully"
-    })
-}
+      status: "success",
+      data: this_user.friends,
+      message: "Friends found successfully!",
+    });
+  };

@@ -174,7 +174,7 @@ exports.protect = async (req, res, next) => {
     }
 
     //verification of token
-    const decoded = await promisify(jwt.verify)(token, this.process?.env.JWT_SECRET);
+    const decoded = await promisify(jwt.verify)(token, process?.env.JWT_SECRET);
 
     //3) check if user still exist
 
