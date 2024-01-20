@@ -152,13 +152,13 @@ mongoose.connect(DB, {
               let new_chat = await OneToOneMessage.create({
                 participants: [to, from],
               });
-        
-              new_chat = await OneToOneMessage.findById(new_chat).populate(
+              console.log("new_chat", new_chat._id);
+
+              new_chat = await OneToOneMessage.findById(new_chat._id).populate(
                 "participants",
                 "firstName lastName _id email status"
               );
         
-              console.log(new_chat);
         
               socket.emit("start_chat", new_chat);
             }
